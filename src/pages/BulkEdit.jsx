@@ -16,115 +16,112 @@ const BulkEdit = () => {
 
   const dispatch = useDispatch();
 
-
-  const validateData=(data)=>{
-
-    if (!data.billFrom[0] || !data.billFromEmail[0] || !data.billFromAddress[0]) {
+  const validateData = (data) => {
+    if (
+      !data.billFrom[0] ||
+      !data.billFromEmail[0] ||
+      !data.billFromAddress[0]
+    ) {
       alert("Please fill in all Bill From fields");
       return false;
     }
-  
+
     if (!data.billTo[0] || !data.billToEmail[0] || !data.billToAddress[0]) {
       alert("Please fill in all Bill To fields");
       return false;
     }
 
-    if(!data.billFromEmail[0].includes("@")){
-      alert("Invalid Bill From email")
-      return false
+    // if(!data.billFromEmail[0].includes("@")){
+    //   alert("Invalid Bill From email")
+    //   return false
+    // }
+    // if(!data.billToEmail[0].includes("@")){
+    //   alert("Invalid Bill To email")
+    //   return false
+    // }
+
+    if (data.discountRate > 100 || data.discountRate < 0) {
+      alert("Discount rate should be in range 0 to 100 ");
+      return false;
     }
-    if(!data.billToEmail[0].includes("@")){
-      alert("Invalid Bill To email")
-      return false
-    }
-    
-    if(data.discountRate>100 || data.discountRate<0){
-      alert("Discount rate should be in range 0 to 100 ")
-      return false
-    }
-    
-    if(data.taxRate>100 || data.taxRate<0){
-      alert("Tax rate should be in range 0 to 100 ")
-      return false
+
+    if (data.taxRate > 100 || data.taxRate < 0) {
+      alert("Tax rate should be in range 0 to 100 ");
+      return false;
     }
 
     const dateValue = new Date(data.dateOfIssue);
-   
+
     if (dateValue < new Date()) {
-        alert(`Due date should not be in the past ${data.dateOfIssue} `);
-        return false
+      alert(`Due date should not be in the past ${data.dateOfIssue} `);
+      return false;
     }
 
-    return true
-
-  }
-
+    return true;
+  };
 
   return (
     
-      <Row>
-        <Col className="mx-auto" >
-          <h3 className="fw-bold pb-2 pb-md-4 text-center">BULK EDIT</h3>
-          <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
-            <Table responsive>
-              <thead>
-                <tr style={{ textAlign: "center" }}>
-                  <th>Invoice No</th>
-                  <th>ID</th>
-                  <th>Bill to</th>
-                  <th>Bill to Email</th>
-                  <th>Bill To Address</th>
-                  <th>Bill from </th>
-                  <th>Bill from Email</th>
-                  <th>Bill from Address</th>
-                  <th>Currency</th>
-                  <th>Due Date</th>
-                  <th>SubTotal</th>
-                  <th>Total</th>
-                  <th>Discount Rate</th>
-                  <th>Discount Amount</th>
-                  <th>TaxRate</th>
-                  <th>TaxAmount</th>
+    <Row>
+      <Col className="mx-auto">
+        <h3 className="fw-bold pb-2 pb-md-4 text-center">BULK EDIT</h3>
+        <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
+          <Table responsive>
+            <thead>
+              <tr style={{ textAlign: "center" }}>
+                <th>Invoice No</th>
+                <th>ID</th>
+                <th>Bill to</th>
+                <th>Bill to Email</th>
+                <th>Bill To Address</th>
+                <th>Bill from </th>
+                <th>Bill from Email</th>
+                <th>Bill from Address</th>
+                <th>Currency</th>
+                <th>Due Date</th>
+                <th>SubTotal</th>
+                <th>Total</th>
+                <th>Discount Rate</th>
+                <th>Discount Amount</th>
+                <th>TaxRate</th>
+                <th>TaxAmount</th>
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedInvoiceList.length === 0 ? (
+                <tr>
+                  <td colSpan={"16"} className="text-center fw-bold py-5 fs-2">
+                    Select data to edit
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {selectedInvoiceList.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={"16"}
-                      className="text-center fw-bold py-5 fs-2"
-                    >
-                      Select data to edit
-                    </td>
-                  </tr>
-                ) : (
-                  selectedInvoiceList.map((invoice) => (
-                    <EditRow
-                      key={invoice.id}
-                      invoice={invoice}
-                      editList={editedList}
-                      addtoEditList={setEditedList}
-                    />
-                  ))
-                )}
-              </tbody>
-            </Table>
-            <Button
-              disabled={selectedInvoiceList.length === 0 ? true : false}
-              onClick={() => {
-                if(editedList.every((invoice)=>validateData(invoice))){
+              ) : (
+                selectedInvoiceList.map((invoice) => (
+                  <EditRow
+                    key={invoice.id}
+                    invoice={invoice}
+                    editList={editedList}
+                    addtoEditList={setEditedList}
+                  />
+                ))
+              )}
+            </tbody>
+          </Table>
+          <Button
+            disabled={selectedInvoiceList.length === 0 ? true : false}
+            onClick={() => {
+              if (editedList.every((invoice) => validateData(invoice))) {
                 dispatch(bulkUpdate(editedList));
                 alert("CHANGES SAVED");
                 navigate("/");
-                }
-              }}
-            >
-              SAVE CHANGES
-            </Button>
-          </Card>
-        </Col>
-      </Row>
-
+              }
+            }}
+          >
+            SAVE CHANGES
+          </Button>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 
@@ -133,10 +130,10 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
 
   const handleEdit = (e) => {
     console.log(e.target.name);
-    setInvoiceDeatil({ ...invoiceDetail,[e.target.name]: [e.target.value]});
-    if(e.target.name=="taxRate"|| e.target.name=="discountRate"){
-      console.log("running calc")
-      handleCalculateTotal()
+    setInvoiceDeatil({ ...invoiceDetail, [e.target.name]: [e.target.value] });
+    if (e.target.name == "taxRate" || e.target.name == "discountRate") {
+      console.log("running calc");
+      handleCalculateTotal();
     }
   };
 
@@ -182,6 +179,18 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
         total,
       };
     });
+  };
+
+  const handleItemEdit = (key, index, value) => {
+    let obj = JSON.parse(JSON.stringify(invoiceDetail));
+    // console.log("check it",obj)
+
+    obj.items[index][key] = value;
+    // console.log("check it2",obj)
+    setInvoiceDeatil(obj);
+    if (key === "itemPrice" || key === "itemQuantity") {
+      handleCalculateTotal();
+    }
   };
 
   return (
@@ -279,10 +288,10 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
         />
       </td>
       <td>
-        <span>{invoiceDetail.currency+invoiceDetail.subTotal}</span>
+        <span>{invoiceDetail.currency + invoiceDetail.subTotal}</span>
       </td>
       <td>
-        <span>{invoiceDetail.currency+invoiceDetail.total}</span>
+        <span>{invoiceDetail.currency + invoiceDetail.total}</span>
       </td>
       <td>
         <input
@@ -317,6 +326,55 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
       </td>
       <td>
         <span>{invoiceDetail.taxAmount}</span>
+      </td>
+      <td>
+        {invoiceDetail.items.map((item, index) => {
+          return (
+            <div className="d-flex">
+              <div className="d-flex align-items-center">
+              <span>ItemName</span>
+              <input
+                type="text"
+                className="mx-1 w-1"
+                value={item.itemName}
+                onChange={(e) =>
+                  handleItemEdit("itemName", index, e.target.value)
+                }
+              />
+              </div>
+              <div className="d-flex align-items-center">
+                <span>Price</span>
+              <input
+                type="number"
+                placeholder="0.0"
+                min="0.00"
+                step="0.01"
+                max="100.00"
+                className="m-1 text-center"
+                value={item.itemPrice}
+                onChange={(e) =>
+                  handleItemEdit("itemPrice", index, e.target.value)
+                }
+              />
+              </div>
+              <div className="d-flex align-items-center">
+                <span>Quantity</span>
+              <input
+                type="number"
+                placeholder="0.0"
+                min="0.00"
+                step=""
+                max="100.00"
+                className="m-1 text-center"
+                value={item.itemQuantity}
+                onChange={(e) =>
+                  handleItemEdit("itemQuantity", index, e.target.value)
+                }
+              />
+              </div>
+            </div>
+          );
+        })}
       </td>
     </tr>
   );
