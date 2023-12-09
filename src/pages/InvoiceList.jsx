@@ -18,10 +18,19 @@ const InvoiceList = () => {
 
   const toggleInvoice=(id)=>{
     if(checkedList.includes(id)){
-      setCheckedList((prev)=>prev.filter((item)=>item.id!==id))
+      setCheckedList((prev)=>prev.filter((invoice)=>invoice!==id))
     }
     else{
       setCheckedList((prev)=>[...prev,id])
+    }
+  }
+
+  const selectAll=()=>{
+    if(checkedList.length===invoiceList.length){
+      setCheckedList([])
+    }
+    else{
+      setCheckedList((prev)=>invoiceList.map((invoice)=>invoice.id))
     }
   }
 
@@ -36,7 +45,7 @@ const InvoiceList = () => {
       navigate(`/create/${copyId}`);
     }
   };
-  console.log(invoiceList)
+  
 
   return (
     <Row>
@@ -78,7 +87,7 @@ const InvoiceList = () => {
               <Table responsive>
                 <thead>
                   <tr>
-                    <th>Select</th>
+                    <th><input checked={checkedList.length===invoiceList.length} onClick={selectAll} type="checkbox"/></th>
                     <th>Invoice No.</th>
                     <th>Bill To</th>
                     <th>Due Date</th>
@@ -93,6 +102,7 @@ const InvoiceList = () => {
                       invoice={invoice}
                       navigate={navigate}
                       handleCheckbox={()=>toggleInvoice(invoice.id)}
+                      isChecked={checkedList}
                     />
                   ))}
                 </tbody>
@@ -108,7 +118,7 @@ const InvoiceList = () => {
   );
 };
 
-const InvoiceRow = ({ invoice, navigate ,handleCheckbox}) => {
+const InvoiceRow = ({ invoice, navigate ,handleCheckbox,isChecked}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -132,7 +142,7 @@ const InvoiceRow = ({ invoice, navigate ,handleCheckbox}) => {
 
   return (
     <tr>
-      <td><input type="checkbox" onClick={(e)=>handleCheckbox()}/></td>
+      <td><input type="checkbox" checked={isChecked.includes(invoice.id)} onClick={()=>handleCheckbox()}/></td>
       <td>{invoice.invoiceNumber}</td>
       <td className="fw-normal">{invoice.billTo}</td>
       <td className="fw-normal">{invoice.dateOfIssue}</td>

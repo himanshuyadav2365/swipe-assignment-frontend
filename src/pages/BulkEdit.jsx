@@ -19,6 +19,25 @@ const BulkEdit = () => {
 
   const validateData=(data)=>{
 
+    if (!data.billFrom[0] || !data.billFromEmail[0] || !data.billFromAddress[0]) {
+      alert("Please fill in all Bill From fields");
+      return false;
+    }
+  
+    if (!data.billTo[0] || !data.billToEmail[0] || !data.billToAddress[0]) {
+      alert("Please fill in all Bill To fields");
+      return false;
+    }
+
+    if(!data.billFromEmail[0].includes("@")){
+      alert("Invalid Bill From email")
+      return false
+    }
+    if(!data.billToEmail[0].includes("@")){
+      alert("Invalid Bill To email")
+      return false
+    }
+    
     if(data.discountRate>100 || data.discountRate<0){
       alert("Discount rate should be in range 0 to 100 ")
       return false
@@ -114,7 +133,7 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
 
   const handleEdit = (e) => {
     console.log(e.target.name);
-    setInvoiceDeatil({ ...invoiceDetail, [e.target.name]: [e.target.value] });
+    setInvoiceDeatil({ ...invoiceDetail,[e.target.name]: [e.target.value]});
     if(e.target.name=="taxRate"|| e.target.name=="discountRate"){
       console.log("running calc")
       handleCalculateTotal()
@@ -260,10 +279,10 @@ const EditRow = ({ invoice, editList, setEditedList }) => {
         />
       </td>
       <td>
-        <span>{invoiceDetail.subTotal}</span>
+        <span>{invoiceDetail.currency+invoiceDetail.subTotal}</span>
       </td>
       <td>
-        <span>{invoiceDetail.total}</span>
+        <span>{invoiceDetail.currency+invoiceDetail.total}</span>
       </td>
       <td>
         <input
